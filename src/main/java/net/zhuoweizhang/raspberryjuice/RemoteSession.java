@@ -14,6 +14,7 @@ import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Iterator;
@@ -36,6 +37,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 import org.mockito.cglib.core.KeyFactory;
+
+import scala.collection.immutable.List;
 
 import javax.crypto.KeyAgreement;
 import javax.crypto.spec.DHParameterSpec;
@@ -644,12 +647,18 @@ public class RemoteSession {
 				
 				BigInteger p = new BigInteger(args[0]);
 				BigInteger g = new BigInteger(args[1]);
+
+				
 				
 				// convert String from mcpi to PublicKey 
 				byte[] pubbytes =  Base64.getDecoder().decode(args[2]);
+				byte[] pubbytes2 =  Base64.getDecoder().decode(args[3]);
+
 				java.security.KeyFactory kf = java.security.KeyFactory.getInstance("EC");
-				X509EncodedKeySpec pk = new X509EncodedKeySpec(pubbytes);
-				java.security.PublicKey pubkey = kf.generatePublic(pk);
+				X509EncodedKeySpec pk1 = new X509EncodedKeySpec(pubbytes);
+				X509EncodedKeySpec pk2 = new X509EncodedKeySpec(pubbytes2);
+				java.security.PublicKey pubkey1 = kf.generatePublic(pk1);
+				java.security.PublicKey pubkey2 = kf.generatePublic(pk2);
 				   
 				
 				
@@ -661,14 +670,28 @@ public class RemoteSession {
 				
 				
 				KeyAgreement keyAgree = KeyAgreement.getInstance("DH", "BC");
+				KeyAgreement keyAgree2 = KeyAgreement.getInstance("DH", "BC");
 				KeyPair pair = keyGen.generateKeyPair();
+				KeyPair pair2 = keyGen.generateKeyPair();
 
 				keyAgree.init(pair.getPrivate());
+				keyAgree2.init(pair2.getPrivate());
+
 				// create secret key here:
-				Key key = keyAgree.doPhase(pubkey, true);
+				Key key = keyAgree.doPhase(pubkey1, true);
+				Key key2 = keyAgree2.doPhase(pubkey2, true);
 				byte[] secretkey = keyAgree.generateSecret();
+				byte[] secretkey2 = keyAgree2.generateSecret();
+
 				//send() Send public key back to client
-				send(pair.getPublic());
+				ArrayList<String> keys = new ArrayList<String>();
+				keys.add(pair.getPublic().toString());
+				keys.add(pair2.getPublic().toString());
+				String keys_as_string = keys.get(0) + "," + keys.get(1);
+				send(keys_as_string);
+
+				System.out.println(secretkey);
+				System.out.println(secretkey2);
 				// send(key.get)
 			// not a command which is supported
 			} else {
