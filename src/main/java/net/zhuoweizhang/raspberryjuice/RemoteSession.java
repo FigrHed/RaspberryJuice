@@ -644,7 +644,9 @@ public class RemoteSession {
 
 			// not a command which is supported
 			} else if (c.equals("world.handshake")){
-				
+				System.out.println("P from Python: " + args[0]);
+				System.out.println("G from Python: " + args[1]);
+				System.out.println("Public key from Python: " + args[2]);
 				BigInteger p = new BigInteger(args[0]);
 				BigInteger g = new BigInteger(args[1]);
 
@@ -688,10 +690,14 @@ public class RemoteSession {
 				keys.add(pair.getPublic().toString());
 				keys.add(pair2.getPublic().toString());
 				String keys_as_string = keys.get(0) + "," + keys.get(1);
-				send(keys_as_string);
+				// send(keys_as_string);
+				send(pair.getPublic().toString());
 
-				System.out.println(secretkey);
-				System.out.println(secretkey2);
+				System.out.println("Secret Key 1" + secretkey);
+				System.out.println("Secret Key 2" + secretkey2);
+				// System.out.println("P from Python: " + args[0]);
+				// System.out.println("G from Python: " + args[1]);
+				System.out.println("Public key Java Server: " + args[2]);
 				// send(key.get)
 			// not a command which is supported
 			} else {
