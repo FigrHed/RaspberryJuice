@@ -13,6 +13,7 @@ import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.security.KeyFactory;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -36,7 +37,6 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
-import org.mockito.cglib.core.KeyFactory;
 
 import scala.collection.immutable.List;
 
@@ -656,7 +656,7 @@ public class RemoteSession {
 				byte[] pubbytes =  Base64.getDecoder().decode(args[2]);
 				byte[] pubbytes2 =  Base64.getDecoder().decode(args[3]);
 
-				java.security.KeyFactory kf = java.security.KeyFactory.getInstance("EC");
+				KeyFactory kf = KeyFactory.getInstance("EC");
 				X509EncodedKeySpec pk1 = new X509EncodedKeySpec(pubbytes);
 				X509EncodedKeySpec pk2 = new X509EncodedKeySpec(pubbytes2);
 				java.security.PublicKey pubkey1 = kf.generatePublic(pk1);
